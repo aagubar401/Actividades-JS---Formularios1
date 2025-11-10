@@ -4,24 +4,228 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario 1</title>
+    <style>
+        .error {
+      color: red;
+      font-size: 0.9em;
+        }
+    </style>
 </head>
 <body>
-    <form action="registro.php" method="post">
-        <fieldset>
-            <label for="nombre">Nombre: </label>
-            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
-            <label for="email">Email: </label>
-            <input type="text" id="email" name="email" placeholder="Tu correo" required>
-            <label for="contraseña">Contraseña: </label>
-            <input type="text" id="contraseña" name="contraseña" placeholder="Tu contraseña" required>
-            <label for="contraseña_repetida">Repite contraseña: </label>
-            <input type="text" id="contraseña_repetida" name="contraseña" placeholder="Repite contraseña" required>
-            <label for="resultado">Resultado de suma: </label>
-            <input type="number" id="resultado" name="resultado" placeholder="Resultado de suma" required>
-            <input type="checkbox" id="condiciones" name="condiciones" value="Aceptar" required>
-            <label for="condiciones">Acepto las condiciones</label>
-            <input type="button" value="Enviar" onclick="enviarFormulario()">
-        </fieldset>
-    </form>
+
+  <fieldset>
+    <label for="nombre">Nombre: </label>
+    <input 
+      type="text" 
+      id="nombre" 
+      name="nombre" 
+      placeholder="Tu nombre" 
+      pattern=".{1,}" 
+      title="El nombre no puede estar vacío" 
+      required>
+    <span id="errorNombre" class="error"></span>
+
+    <label for="email">Email: </label>
+    <input 
+      type="email" 
+      id="email" 
+      name="email" 
+      placeholder="Tu correo" 
+      pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$" 
+      title="Introduce un correo electrónico válido (ej: usuario@dominio.com)" 
+      required>
+    <span id="errorEmail" class="error"></span>
+
+    <label for="contraseña">Contraseña: </label>
+    <input 
+      type="password" 
+      id="contraseña" 
+      name="contraseña" 
+      placeholder="Tu contraseña" 
+      pattern="(?=.*\d).{8,}" 
+      title="Debe tener al menos 8 caracteres e incluir al menos un número" 
+      required>
+    <span id="errorContraseña" class="error"></span>
+
+    <label for="contraseña_repetida">Repite contraseña: </label>
+    <input 
+      type="password" 
+      id="contraseña_repetida" 
+      name="contraseña_repetida" 
+      placeholder="Repite contraseña" 
+      pattern="(?=.*\d).{8,}" 
+      title="Debe coincidir con la contraseña anterior" 
+      required>
+    <span id="errorContraseña2" class="error"></span>
+
+    <div id="captcha"></div>
+    <label for="resultado">Resultado de suma: </label>
+    <input 
+      type="number" 
+      id="resultado" 
+      name="resultado" 
+      placeholder="Resultado de la suma" 
+      title="Introduce el resultado correcto de la suma" 
+      required>
+    <span id="errorCaptcha" class="error"></span>
+
+    <div style="margin-top:10px;">
+      <input type="checkbox" id="condiciones" name="condiciones" value="Aceptar">
+      <label for="condiciones">Acepto las condiciones</label>
+    </div>
+
+    <input type="button" id="botonEnviar" value="Enviar" onclick="enviarFormulario()" disabled>
+  </fieldset>
+
+  <script>
+    // Referencias
+    const nombre = document.getElementById("nombre");
+    const email = document.getElementById("email");
+    const pass = document.getElementById("contraseña");
+    const pass2 = document.getElementById("contraseña_repetida");
+    const resultado = document.getElementById("resultado");
+    const condiciones = document.getElementById("condiciones");
+    const botonEnviar = document.getElementById("botonEnviar");
+
+    // Spans de error
+    const errorNombre = document.getElementById("errorNombre");
+    const errorEmail = document.getElementById("errorEmail");
+    const errorContraseña = document.getElementById("errorContraseña");
+    const errorContraseña2 = document.getElementById("errorContraseña2");
+    const errorCaptcha = document.getElementById("errorCaptcha");
+
+    // Captcha aleatorio
+    const captchaDiv = document.getElementById("captcha");
+    let n1 = Math.floor(Math.random() * 10);
+    let n2 = Math.floor(Math.random() * 10);
+    let sumaCorrecta = n1 + n2;
+    captchaDiv.innerHTML = `<p>¿Cuánto es ${n1} + ${n2}?</p>`;
+
+    // Activar botón cuando se acepta
+    condiciones.addEventListener("change", () => {
+      botonEnviar.disabled = !condiciones.checked;
+    });
+
+    // Validaciones individuales al salir de cada campo
+    nombre.addEventListener("blur", () => {
+      if (nombre.value.trim() === "") {
+        errorNombre.textContent = "El nombre no puede estar vacío.";
+      } else {
+        errorNombre.textContent = "";
+      }
+    });
+
+    email.addEventListener("blur", () => {
+      const patronEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+      if (!patronEmail.test(email.value)) {
+        errorEmail.textContent = "Introduce un correo electrónico válido.";
+      } else {
+        errorEmail.textContent = "";
+      }
+    });
+
+    pass.addEventListener("blur", () => {
+      const patronPass = /^(?=.*\d).{8,}$/;
+      if (!patronPass.test(pass.value)) {
+        errorContraseña.textContent = "Debe tener al menos 8 caracteres y un número.";
+      } else {
+        errorContraseña.textContent = "";
+      }
+    });
+
+    pass2.addEventListener("blur", () => {
+      if (pass2.value !== pass.value) {
+        errorContraseña2.textContent = "Las contraseñas no coinciden.";
+      } else {
+        errorContraseña2.textContent = "";
+      }
+    });
+
+    resultado.addEventListener("blur", () => {
+      if (parseInt(resultado.value) !== sumaCorrecta) {
+        errorCaptcha.textContent = "Resultado incorrecto.";
+      } else {
+        errorCaptcha.textContent = "";
+      }
+    });
+
+    // Enviar formulario
+    function enviarFormulario() {
+      let valido = true;
+
+      // Validar nombre
+      if (nombre.value.trim() === "") {
+        errorNombre.textContent = "El nombre no puede estar vacío.";
+        nombre.focus();
+        valido = false;
+      } else {
+        errorNombre.textContent = "";
+      }
+
+      // Validar email
+      const patronEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+      if (!patronEmail.test(email.value)) {
+        errorEmail.textContent = "Correo electrónico no válido.";
+        if (valido) email.focus();
+        valido = false;
+      } else {
+        errorEmail.textContent = "";
+      }
+
+      // Validar contraseña
+      const patronPass = /^(?=.*\d).{8,}$/;
+      if (!patronPass.test(pass.value)) {
+        errorContraseña.textContent = "Debe tener al menos 8 caracteres y un número.";
+        if (valido) pass.focus();
+        valido = false;
+      } else {
+        errorContraseña.textContent = "";
+      }
+
+      // Validar repetición
+      if (pass2.value !== pass.value) {
+        errorContraseña2.textContent = "Las contraseñas no coinciden.";
+        if (valido) pass2.focus();
+        valido = false;
+      } else {
+        errorContraseña2.textContent = "";
+      }
+
+      // Validar captcha
+      if (parseInt(resultado.value) !== sumaCorrecta) {
+        errorCaptcha.textContent = "Resultado incorrecto.";
+        if (valido) resultado.focus();
+        valido = false;
+      } else {
+        errorCaptcha.textContent = "";
+      }
+
+      // Validar condiciones
+      if (!condiciones.checked) {
+        alert("Debes aceptar las condiciones antes de continuar.");
+        valido = false;
+      }
+
+      // Si todo está bien
+      if (valido) {
+        alert("Formulario enviado correctamente ✅");
+        // Reiniciar formulario
+        nombre.value = "";
+        email.value = "";
+        pass.value = "";
+        pass2.value = "";
+        resultado.value = "";
+        condiciones.checked = false;
+        botonEnviar.disabled = true;
+
+        // Nueva suma
+        n1 = Math.floor(Math.random() * 10);
+        n2 = Math.floor(Math.random() * 10);
+        sumaCorrecta = n1 + n2;
+        captchaDiv.innerHTML = `<p>¿Cuánto es ${n1} + ${n2}?</p>`;
+      }
+    }
+  </script>
+
 </body>
 </html>
