@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario 1</title>
+</head>
+<body>
+    <form action="registro.php" method="post">
+        <fieldset>
+            <label for="nombre">Nombre: </label>
+            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+            <label for="email">Email: </label>
+            <input type="text" id="email" name="email" placeholder="Tu correo" required>
+            <label for="contraseña">Contraseña: </label>
+            <input type="text" id="contraseña" name="contraseña" placeholder="Tu contraseña" required>
+            <label for="contraseña_repetida">Repite contraseña: </label>
+            <input type="text" id="contraseña_repetida" name="contraseña" placeholder="Repite contraseña" required>
+            <label for="resultado">Resultado de suma: </label>
+            <input type="number" id="resultado" name="resultado" placeholder="Resultado de suma" required>
+            <input type="checkbox" id="condiciones" name="condiciones" value="Aceptar" required>
+            <label for="condiciones">Acepto las condiciones</label>
+            <input type="button" value="Enviar" onclick="enviarFormulario()">
+        </fieldset>
+    </form>
+</body>
+</html>
