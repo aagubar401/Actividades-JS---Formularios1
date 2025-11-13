@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario 2</title>
+    <style>
+        .error {
+      color: red;
+      font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <form id="miFormulario" action="grabar.php" method="post">
+    <fieldset>
+        <label for="nombre">Nombre: </label>
+        <input 
+          type="text" 
+          id="nombre" 
+          name="nombre" 
+          placeholder="Tu nombre" 
+          pattern="^\S{8,}$" 
+          title="El nombre no puede estar vacío" 
+          required>
+        <span id="errorNombre" class="error"></span>
+        <label for="contraseña">Contraseña: </label>
+        <input
+          type="password"
+          id="contraseña"
+          name="contraseña"
+          placeholder="Contraseña"
+          pattern="^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,10}$"
+          title="Debe tener entre 6 y 10 caracteres alfanuméricos e incluir al menos una mayúscula y un número"
+          required>
+        <span id="errorContraseña" class="error"></span>
+        <label for="poblacion">Población:</label>
+      <select id="poblacion" name="poblacion" required>
+        <option value="">– Seleccione –</option>
+        <option>Alcalá de los Gazules</option>
+        <option>Alcalá del Valle</option>
+        <option>Algar</option>
+        <option>Algeciras</option>
+        <option>Algodonales</option>
+        <option>Arcos de la Frontera</option>
+        <option>Barbate</option>
+        <option>Benalup-Casas Viejas</option>
+        <option>Benaocaz</option>
+        <option>Bornos</option>
+        <option>El Bosque</option>
+        <option>Chiclana de la Frontera</option>
+        <option>Chipiona</option>
+        <option>Conil de la Frontera</option>
+        <option>Espera</option>
+        <option>Grazalema</option>
+        <option>Jerez de la Frontera</option>
+        <option>Jimena de la Frontera</option>
+        <option>La Línea de la Concepción</option>
+        <option>Medina Sidonia</option>
+        <option>Olvera</option>
+        <option>Paterna de Rivera</option>
+        <option>Prado del Rey</option>
+        <option>Puerto Real</option>
+        <option>Puerto Serrano</option>
+        <option>Rota</option>
+        <option>San Fernando</option>
+        <option>San José del Valle</option>
+        <option>San Roque</option>
+        <option>Sanlúcar de Barrameda</option>
+        <option>Setenil de las Bodegas</option>
+        <option>Tarifa</option>
+        <option>Torre Alháquime</option>
+        <option>Trebujena</option>
+        <option>Ubrique</option>
+        <option>Vejer de la Frontera</option>
+        <option>Villaluenga del Rosario</option>
+        <option>Villamartín</option>
+        <option>Zahara de la Sierra</option>
+      </select>
+      <span id="errorPoblacion" class="error"></span>
+      <button id="enviar" name="enviar", type="submit">Enviar</button>
+    </fieldset>
+    </form>
+    <script>
+        const formulario = document.getElementById("miFormulario")
+        const usuario = document.getElementById("nombre")
+        const pass = document.getElementById("contraseña")
+        const poblacion = document.getElementById("poblacion")
+        const botonEnviar = document.getElementById("enviar")
+
+        const errorUsuario = document.getElementById("errorNombre")
+        const errorContraseña = document.getElementById("errorContraseña")
+        const errorPoblacion = document.getElementById("errorPoblacion")
+
+        usuario.addEventListener("blur", () => {
+      const patronUsuario = /^[^\s]{8,}$/;
+      errorUsuario.textContent = patronUsuario.test(usuario.value)
+        ? ""
+        : "El usuario debe tener al menos 8 caracteres y sin espacios.";
+      comprobarFormulario();
+    });
+
+    pass.addEventListener("blur", () => {
+      const patronPass = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,10}$/;
+      errorContraseña.textContent = patronPass.test(pass.value)
+        ? ""
+        : "Debe tener entre 6 y 10 caracteres, una mayúscula y un número";
+      comprobarFormulario();
+    });
+
+    poblacion.addEventListener("change", () => {
+      errorPoblacion.textContent = poblacion.value === "" 
+        ? "Debes seleccionar una población." 
+        : "";
+      comprobarFormulario();
+    });
+
+     function comprobarFormulario() {
+      const usuarioValido = /^[^\s]{8,}$/.test(usuario.value);
+      const passValido = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,10}$/.test(pass.value);
+      const poblacionValida = poblacion.value !== "";
+
+      botonEnviar.disabled = !(usuarioValido && passValido && poblacionValida);
+    };
+
+    formulario.addEventListener("submit", (e) => {
+      let valido = true;
+
+      if (!/^[^\s]{8,}$/.test(usuario.value)) {
+        errorUsuario.textContent = "El usuario debe tener al menos 8 caracteres sin espacios.";
+        usuario.focus();
+        valido = false;
+      }
+
+      if (!/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,10}$/.test(pass.value)) {
+        errorContraseña.textContent = "La contraseña debe tener entre 6 y 10 caracteres, una mayúscula y un número.";
+        if (valido) pass.focus();
+        valido = false;
+      }
+
+      if (poblacion.value === "") {
+        errorPoblacion.textContent = "Debes seleccionar una población.";
+        if (valido) poblacion.focus();
+        valido = false;
+      }
+
+      if (!valido) {
+        e.preventDefault();
+      } else {
+        alert("Formulario enviado correctamente ✅");
+        e.preventDefault(); 
+        formulario.reset();
+        botonEnviar.disabled = true;
+      }
+    });
+    </script>
+</body>
+</html>
